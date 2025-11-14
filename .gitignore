@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Output files
+active_output/
+*.png
+*.jpg
+*.jpeg
+*.txt
+*.xml
+!data/*.xml
+!data/*.png
+
+# Keep data folder structure but ignore large files
+data/*.png
+data/*.xml
+data/*.txt
+!data/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# EasyOCR models (if downloaded locally)
+.easyocr/
+
