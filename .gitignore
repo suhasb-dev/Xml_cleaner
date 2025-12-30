@@ -39,6 +39,8 @@ active_output/
 *.jpg
 *.jpeg
 *.txt
+!**/requirements.txt
+!**/packages.txt
 *.xml
 !data/*.xml
 !data/*.png

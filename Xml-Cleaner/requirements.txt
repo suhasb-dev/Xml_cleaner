@@ -1,0 +1,10 @@
+gradio>=6.1.0
+easyocr>=1.7.0
+pytesseract>=0.3.10
+opencv-python-headless>=4.8.0
+matplotlib>=3.7.0
+lxml>=4.9.0
+numpy>=1.24.0
+Pillow>=10.0.0
+datasketch>=1.6.0
+
