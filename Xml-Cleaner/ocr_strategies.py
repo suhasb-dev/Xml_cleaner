@@ -1,9 +1,25 @@
-import easyocr
-import pytesseract
 from abc import ABC, abstractmethod
 from typing import Set
-import cv2
-import numpy as np
+
+# Lazy imports to handle missing dependencies gracefully
+try:
+    import easyocr
+    EASYOCR_AVAILABLE = True
+except ImportError:
+    EASYOCR_AVAILABLE = False
+
+try:
+    import pytesseract
+    PYTESSERACT_AVAILABLE = True
+except ImportError:
+    PYTESSERACT_AVAILABLE = False
+
+try:
+    import cv2
+    import numpy as np
+    CV2_AVAILABLE = True
+except ImportError:
+    CV2_AVAILABLE = False
 
 class OCRStrategy(ABC):
     """Abstract base class for OCR strategies."""
@@ -14,6 +30,10 @@ class OCRStrategy(ABC):
 class EasyOCRStrategy(OCRStrategy):
     """Concrete strategy for EasyOCR."""
     def __init__(self):
+        if not EASYOCR_AVAILABLE:
+            raise ImportError(
+                "EasyOCR is not installed. Please install it with: pip install easyocr"
+            )
         # Initialize once to save memory/time
         print("Loading EasyOCR Model...")
         self.reader = easyocr.Reader(['en'], gpu=False)
@@ -24,6 +44,16 @@ class EasyOCRStrategy(OCRStrategy):
 
 class TesseractOCRStrategy(OCRStrategy):
     """Concrete strategy for Tesseract OCR (Free & Fast)."""
+    def __init__(self):
+        if not PYTESSERACT_AVAILABLE:
+            raise ImportError(
+                "pytesseract is not installed. Please install it with: pip install pytesseract"
+            )
+        if not CV2_AVAILABLE:
+            raise ImportError(
+                "opencv-python is not installed. Please install it with: pip install opencv-python-headless"
+            )
+    
     def extract_text(self, image_path: str) -> Set[str]:
         # Preprocessing for better Tesseract accuracy
         img = cv2.imread(image_path)
