@@ -466,24 +466,58 @@ class XMLCleanerCore:
         if not active_lca: return 0
         
         stale_set = set(stale_elements)
+        active_set = set(active_elements)
         removed_count = 0
         current = active_lca
         
-        # 2. Traverse Up and Prune Siblings
+        # 2. Prune stale descendants within LCA subtree
+        # Remove stale elements that are descendants of LCA but not ancestors of any active element
+        removed_count += self._prune_stale_descendants(active_lca, active_set, stale_set, parent_map)
+        
+        # 3. Traverse Up and Prune Siblings
         while current is not None:
             parent = parent_map.get(current)
             if not parent: break
             
             siblings = [child for child in parent if child != current]
             for sibling in siblings:
-                # If sibling tree has stale elements?
-                # Simplified: If sibling is strictly in stale list or contains them
+                # If sibling tree has stale elements, remove the entire sibling subtree
                 if self._subtree_has_stale(sibling, stale_set):
                     removed_count += len(list(sibling.iter()))
                     parent.remove(sibling)
             
             current = parent
         return removed_count
+    
+    def _prune_stale_descendants(self, node, active_set, stale_set, parent_map):
+        """Prune stale elements that are descendants of node but not needed for active elements"""
+        removed_count = 0
+        
+        # Get all children of the current node (create a copy to avoid modification during iteration)
+        children = list(node)
+        
+        for child in children:
+            # Check if this child subtree contains any active elements
+            has_active = child in active_set or self._subtree_has_active(child, active_set)
+            
+            if has_active:
+                # This subtree has active elements, recursively prune within it
+                removed_count += self._prune_stale_descendants(child, active_set, stale_set, parent_map)
+            else:
+                # This subtree has no active elements
+                # Remove if it contains stale elements (the entire subtree is stale)
+                if self._subtree_has_stale(child, stale_set):
+                    removed_count += len(list(child.iter()))
+                    node.remove(child)
+        
+        return removed_count
+    
+    def _subtree_has_active(self, node, active_set):
+        """Check if subtree contains any active elements"""
+        for elem in node.iter():
+            if elem in active_set:
+                return True
+        return False
 
     def _subtree_has_stale(self, node, stale_set):
         for x in node.iter():
